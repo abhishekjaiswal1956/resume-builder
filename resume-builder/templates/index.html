@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ResumeForge — Build Your Story</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+<!-- ─── HEADER ─────────────────────────────────────── -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">ResumeForge</span>
+      <span class="logo-tag">v1.0 · Python OOP</span>
+    </div>
+    <nav class="steps-nav">
+      <button class="step-btn active" data-step="personal">① Personal</button>
+      <button class="step-btn" data-step="education">② Education</button>
+      <button class="step-btn" data-step="skills">③ Skills</button>
+      <button class="step-btn" data-step="experience">④ Experience</button>
+      <button class="step-btn" data-step="projects">⑤ Projects</button>
+      <button class="step-btn" data-step="preview">⑥ Preview</button>
+    </nav>
+    <button class="reset-btn" id="resetBtn">↺ Reset</button>
+  </div>
+</header>
+
+<!-- ─── HERO ───────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <p class="hero-eyebrow">NIET CSE-AI · External Presentation Project</p>
+      <h1 class="hero-title">Build a resume<br/><em>that lands.</em></h1>
+      <p class="hero-sub">Python · OOP · File Handling · Tkinter-style GUI · Flask</p>
+    </div>
+    <div class="hero-right">
+      <div class="stat-card"><span class="stat-num" id="statFields">0</span><span class="stat-label">Fields Filled</span></div>
+      <div class="stat-card accent"><span class="stat-num" id="statSections">0</span><span class="stat-label">Sections Done</span></div>
+      <div class="stat-card"><span class="stat-num" id="statSkills">0</span><span class="stat-label">Skills Added</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MAIN BUILDER ───────────────────────────────── -->
+<main class="builder">
+
+  <!-- PERSONAL -->
+  <section class="form-section active" id="sec-personal">
+    <div class="section-head">
+      <span class="sec-badge">STEP 01</span>
+      <h2>Personal Information</h2>
+      <p>Your identity. Make it count.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group span-2">
+        <label>Full Name *</label>
+        <input type="text" id="p-name" placeholder="Abhishek Kumar" />
+      </div>
+      <div class="field-group">
+        <label>Email *</label>
+        <input type="email" id="p-email" placeholder="abhishek@email.com" />
+      </div>
+      <div class="field-group">
+        <label>Phone *</label>
+        <input type="text" id="p-phone" placeholder="+91 98765 43210" />
+      </div>
+      <div class="field-group">
+        <label>Location</label>
+        <input type="text" id="p-location" placeholder="Greater Noida, UP" />
+      </div>
+      <div class="field-group">
+        <label>LinkedIn / GitHub</label>
+        <input type="text" id="p-linkedin" placeholder="linkedin.com/in/yourname" />
+      </div>
+      <div class="field-group span-2">
+        <label>Career Objective</label>
+        <textarea id="p-objective" rows="3" placeholder="A passionate CSE-AI student seeking opportunities to apply my skills in machine learning and software development..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="savePersonal()">Save & Continue →</button>
+    </div>
+    <div class="toast" id="toast-personal"></div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section class="form-section" id="sec-education">
+    <div class="section-head">
+      <span class="sec-badge">STEP 02</span>
+      <h2>Education</h2>
+      <p>Your academic foundation.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group span-2">
+        <label>Degree / Qualification *</label>
+        <input type="text" id="e-degree" placeholder="B.Tech — Computer Science Engineering (AI)" />
+      </div>
+      <div class="field-group span-2">
+        <label>Institution *</label>
+        <input type="text" id="e-institution" placeholder="NIET, Greater Noida" />
+      </div>
+      <div class="field-group">
+        <label>Year of Passing</label>
+        <input type="text" id="e-year" placeholder="2026" />
+      </div>
+      <div class="field-group">
+        <label>CGPA / Percentage</label>
+        <input type="text" id="e-grade" placeholder="8.5 CGPA" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="addEducation()">+ Add Education</button>
+    </div>
+    <div class="added-list" id="edu-list"></div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="nextStep('skills')">Continue →</button>
+    </div>
+    <div class="toast" id="toast-education"></div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="form-section" id="sec-skills">
+    <div class="section-head">
+      <span class="sec-badge">STEP 03</span>
+      <h2>Technical Skills</h2>
+      <p>Press Enter or click + to add each skill.</p>
+    </div>
+    <div class="skill-input-row">
+      <input type="text" id="skill-input" placeholder="e.g. Python, Machine Learning, Flask..." />
+      <button class="btn-add" onclick="addSkill()">+</button>
+    </div>
+    <div class="skill-presets">
+      <span class="preset-label">Quick add:</span>
+      <button class="preset-chip" onclick="quickSkill('Python')">Python</button>
+      <button class="preset-chip" onclick="quickSkill('Flask')">Flask</button>
+      <button class="preset-chip" onclick="quickSkill('Machine Learning')">Machine Learning</button>
+      <button class="preset-chip" onclick="quickSkill('Deep Learning')">Deep Learning</button>
+      <button class="preset-chip" onclick="quickSkill('SQL')">SQL</button>
+      <button class="preset-chip" onclick="quickSkill('Java')">Java</button>
+      <button class="preset-chip" onclick="quickSkill('HTML/CSS')">HTML/CSS</button>
+      <button class="preset-chip" onclick="quickSkill('Git')">Git</button>
+      <button class="preset-chip" onclick="quickSkill('TensorFlow')">TensorFlow</button>
+      <button class="preset-chip" onclick="quickSkill('Django')">Django</button>
+    </div>
+    <div class="skills-cloud" id="skills-cloud"></div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="nextStep('experience')">Continue →</button>
+    </div>
+    <div class="toast" id="toast-skills"></div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="form-section" id="sec-experience">
+    <div class="section-head">
+      <span class="sec-badge">STEP 04</span>
+      <h2>Work Experience</h2>
+      <p>Internships, jobs, freelance work.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Job Title / Role</label>
+        <input type="text" id="ex-role" placeholder="Python Developer Intern" />
+      </div>
+      <div class="field-group">
+        <label>Company / Organisation</label>
+        <input type="text" id="ex-company" placeholder="TechCorp Pvt. Ltd." />
+      </div>
+      <div class="field-group">
+        <label>Duration</label>
+        <input type="text" id="ex-duration" placeholder="Jun 2024 – Aug 2024" />
+      </div>
+      <div class="field-group">
+        <label>Location</label>
+        <input type="text" id="ex-location" placeholder="Remote / Noida" />
+      </div>
+      <div class="field-group span-2">
+        <label>Key Responsibilities</label>
+        <textarea id="ex-desc" rows="3" placeholder="Developed REST APIs using Flask and integrated ML models for prediction tasks..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="addExperience()">+ Add Experience</button>
+    </div>
+    <div class="added-list" id="exp-list"></div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="nextStep('projects')">Continue →</button>
+    </div>
+    <div class="toast" id="toast-experience"></div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="form-section" id="sec-projects">
+    <div class="section-head">
+      <span class="sec-badge">STEP 05</span>
+      <h2>Projects & Certifications</h2>
+      <p>Showcase what you've built.</p>
+    </div>
+    <div class="two-col-layout">
+      <div class="col">
+        <h3 class="col-title">Projects</h3>
+        <div class="form-grid">
+          <div class="field-group span-2">
+            <label>Project Name</label>
+            <input type="text" id="pr-name" placeholder="Resume Builder (Python OOP)" />
+          </div>
+          <div class="field-group span-2">
+            <label>Technologies Used</label>
+            <input type="text" id="pr-tech" placeholder="Python, Flask, Tkinter, File Handling" />
+          </div>
+          <div class="field-group span-2">
+            <label>Description</label>
+            <textarea id="pr-desc" rows="2" placeholder="A GUI-based resume builder using Python OOP concepts with file storage..."></textarea>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="addProject()">+ Add Project</button>
+        <div class="added-list" id="proj-list"></div>
+      </div>
+      <div class="col">
+        <h3 class="col-title">Certifications</h3>
+        <div class="form-grid">
+          <div class="field-group span-2">
+            <label>Certification Name</label>
+            <input type="text" id="cert-name" placeholder="Python for Data Science" />
+          </div>
+          <div class="field-group">
+            <label>Issued By</label>
+            <input type="text" id="cert-issuer" placeholder="Coursera / NPTEL" />
+          </div>
+          <div class="field-group">
+            <label>Year</label>
+            <input type="text" id="cert-year" placeholder="2024" />
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="addCertification()">+ Add Cert</button>
+        <div class="added-list" id="cert-list"></div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="generateResume()">⚡ Generate Resume →</button>
+    </div>
+    <div class="toast" id="toast-projects"></div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="form-section" id="sec-preview">
+    <div class="section-head">
+      <span class="sec-badge">STEP 06</span>
+      <h2>Your Resume</h2>
+      <p>Generated using Python OOP + File Handling</p>
+    </div>
+    <div class="preview-toolbar">
+      <button class="btn-primary" onclick="downloadResume()">⬇ Download .txt</button>
+      <button class="btn-secondary" onclick="copyResume()">⎘ Copy Text</button>
+      <button class="btn-ghost" onclick="nextStep('personal')">← Edit Details</button>
+    </div>
+    <div class="resume-output" id="resume-output">
+      <div class="empty-state">
+        <span class="empty-icon">📄</span>
+        <p>Fill in your details and click <strong>Generate Resume</strong></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ─── PYTHON CODE PANEL ───────────────────────────── -->
+<section class="code-panel">
+  <div class="code-panel-inner">
+    <div class="code-panel-head">
+      <span class="code-badge">Python OOP — Under the Hood</span>
+      <p>This is the actual Python class powering your resume</p>
+    </div>
+    <pre class="code-block"><code><span class="kw">class</span> <span class="cls">ResumeManager</span>:
+    <span class="str">"""OOP-based resume management system"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.personal      <span class="op">=</span> {}
+        self.education     <span class="op">=</span> []
+        self.skills        <span class="op">=</span> []
+        self.experience    <span class="op">=</span> []
+        self.projects      <span class="op">=</span> []
+        self.certifications <span class="op">=</span> []
+
+    <span class="kw">def</span> <span class="fn">add_education</span>(self, edu):
+        self.education.append(edu)      <span class="comment"># List management</span>
+
+    <span class="kw">def</span> <span class="fn">add_skill</span>(self, skill):
+        <span class="kw">if</span> skill <span class="kw">not in</span> self.skills:
+            self.skills.append(skill)   <span class="comment"># Deduplication</span>
+
+    <span class="kw">def</span> <span class="fn">generate_text_resume</span>(self):
+        <span class="str">"""Generate formatted text file — File Handling"""</span>
+        lines <span class="op">=</span> []
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"resume.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+            f.write(<span class="str">"\n"</span>.join(lines))  <span class="comment"># Exception Handling ✓</span>
+        <span class="kw">return</span> <span class="str">"\n"</span>.join(lines)</code></pre>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p><strong>Resume Builder</strong> — NIET CSE-AI External Presentation</p>
+    <p>Python · OOP · File Handling · Flask · Exception Handling · Lists & Dictionaries</p>
+  </div>
+</footer>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
