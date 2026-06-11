@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 10pt; color: #111;
+    background: white; width: 210mm; min-height: 297mm;
+    padding: 0;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar { height: 6px; background: linear-gradient(90deg, #c0392b, #e74c3c, #f39c12); }
+
+  /* ── HEADER ── */
+  .header { padding: 28px 44px 20px; display: flex; align-items: center; gap: 24px; }
+  .photo-wrap img {
+    width: 75px; height: 75px; border-radius: 4px;
+    object-fit: cover; border: 1px solid #ddd;
+  }
+  .photo-placeholder {
+    width: 75px; height: 75px; border-radius: 4px;
+    border: 1px dashed #ccc; background: #fafafa;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22pt; color: #ccc;
+  }
+  .header-info { flex: 1; }
+  .name {
+    font-size: 28pt; font-weight: 700; letter-spacing: -1.5px;
+    color: #111; line-height: 1;
+    font-family: 'Georgia', serif;
+  }
+  .header-divider { height: 2px; background: #111; margin: 8px 0; }
+  .contact-line {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8.5pt; color: #555;
+    display: flex; flex-wrap: wrap; gap: 4px 20px;
+  }
+  .contact-sep { color: #bbb; }
+
+  /* ── BODY ── */
+  .body { padding: 10px 44px 32px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 20px; }
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .section-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8pt; font-weight: 700; color: #c0392b;
+    text-transform: uppercase; letter-spacing: 3px;
+    white-space: nowrap;
+  }
+  .section-rule { flex: 1; height: 1px; background: #ddd; }
+
+  /* ── TWO COL LAYOUT for skills + certs ── */
+  .two-col { display: flex; gap: 30px; }
+  .col-half { flex: 1; }
+
+  /* ── OBJECTIVE ── */
+  .obj-text {
+    font-size: 9.5pt; line-height: 1.7; color: #444;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    border-left: 2px solid #f39c12;
+    padding-left: 12px;
+    font-style: italic;
+  }
+
+  /* ── EDUCATION ── */
+  .edu-entry { margin-bottom: 10px; }
+  .edu-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .edu-degree {
+    font-weight: 700; font-size: 10pt; color: #111;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  .edu-date { font-size: 8.5pt; color: #888; font-family: sans-serif; }
+  .edu-school { font-size: 9pt; color: #666; font-family: sans-serif; margin-top: 2px; }
+  .edu-grade {
+    font-size: 8.5pt; color: #c0392b; font-weight: 700;
+    font-family: sans-serif;
+  }
+
+  /* ── EXPERIENCE / PROJECTS ── */
+  .entry { margin-bottom: 13px; }
+  .entry-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .entry-title { font-weight: 700; font-size: 10pt; color: #111; font-family: sans-serif; }
+  .entry-date { font-size: 8.5pt; color: #888; font-family: sans-serif; }
+  .entry-sub { font-size: 9pt; color: #555; font-family: sans-serif; font-weight: 600; margin-top: 1px; }
+  .entry-desc { font-size: 9pt; color: #555; line-height: 1.55; margin-top: 4px; font-family: sans-serif; }
+  .entry-tech { font-size: 8pt; color: #c0392b; font-family: sans-serif; font-weight: 700; margin-top: 4px; }
+
+  /* ── SKILLS ── */
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 5px 8px; }
+  .skill-tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8.5pt; color: #333;
+    border: 1px solid #ddd; padding: 3px 10px;
+    border-radius: 2px; background: #fafafa;
+  }
+
+  /* ── CERTS ── */
+  .cert-entry { margin-bottom: 8px; }
+  .cert-name { font-size: 9pt; font-weight: 700; color: #111; font-family: sans-serif; }
+  .cert-info { font-size: 8.5pt; color: #888; font-family: sans-serif; }
+
+  /* ── FOOTER ── */
+  .footer-bar { height: 6px; background: linear-gradient(90deg, #f39c12, #e74c3c, #c0392b); margin-top: 20px; }
+  .footer-text {
+    text-align: center; font-size: 7.5pt; color: #bbb;
+    font-family: sans-serif; padding: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="photo-wrap">
+    {% if r.photo %}
+      <img src="{{ r.photo }}" alt="Photo"/>
+    {% else %}
+      <div class="photo-placeholder">☺</div>
+    {% endif %}
+  </div>
+  <div class="header-info">
+    <div class="name">{{ r.personal.get('name', 'Your Name') }}</div>
+    <div class="header-divider"></div>
+    <div class="contact-line">
+      {% if r.personal.get('email') %}<span>{{ r.personal.email }}</span>{% endif %}
+      {% if r.personal.get('phone') %}<span class="contact-sep">|</span><span>{{ r.personal.phone }}</span>{% endif %}
+      {% if r.personal.get('location') %}<span class="contact-sep">|</span><span>{{ r.personal.location }}</span>{% endif %}
+      {% if r.personal.get('linkedin') %}<span class="contact-sep">|</span><span>{{ r.personal.linkedin }}</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="body">
+
+  {% if r.personal.get('objective') %}
+  <div class="section">
+    <div class="section-header"><span class="section-label">Profile</span><div class="section-rule"></div></div>
+    <div class="obj-text">{{ r.personal.objective }}</div>
+  </div>
+  {% endif %}
+
+  {% if r.education %}
+  <div class="section">
+    <div class="section-header"><span class="section-label">Education</span><div class="section-rule"></div></div>
+    {% for e in r.education %}
+    <div class="edu-entry">
+      <div class="edu-row">
+        <div class="edu-degree">{{ e.degree }}</div>
+        <div class="edu-date">{{ e.year }}</div>
+      </div>
+      <div class="edu-school">{{ e.institution }}</div>
+      {% if e.grade %}<div class="edu-grade">{{ e.grade }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if r.experience %}
+  <div class="section">
+    <div class="section-header"><span class="section-label">Experience</span><div class="section-rule"></div></div>
+    {% for ex in r.experience %}
+    <div class="entry">
+      <div class="entry-row">
+        <div class="entry-title">{{ ex.role }}</div>
+        <div class="entry-date">{{ ex.duration }}</div>
+      </div>
+      <div class="entry-sub">{{ ex.company }}{% if ex.location %} · {{ ex.location }}{% endif %}</div>
+      {% if ex.description %}<div class="entry-desc">{{ ex.description }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if r.projects %}
+  <div class="section">
+    <div class="section-header"><span class="section-label">Projects</span><div class="section-rule"></div></div>
+    {% for p in r.projects %}
+    <div class="entry">
+      <div class="entry-title">{{ p.name }}</div>
+      {% if p.description %}<div class="entry-desc">{{ p.description }}</div>{% endif %}
+      {% if p.tech %}<div class="entry-tech">⬡ {{ p.tech }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="two-col">
+    {% if r.skills %}
+    <div class="col-half">
+      <div class="section">
+        <div class="section-header"><span class="section-label">Skills</span><div class="section-rule"></div></div>
+        <div class="skills-grid">
+          {% for s in r.skills %}
+            <span class="skill-tag">{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if r.certifications %}
+    <div class="col-half">
+      <div class="section">
+        <div class="section-header"><span class="section-label">Certifications</span><div class="section-rule"></div></div>
+        {% for c in r.certifications %}
+        <div class="cert-entry">
+          <div class="cert-name">{{ c.name }}</div>
+          <div class="cert-info">{{ c.issuer }}{% if c.year %} · {{ c.year }}{% endif %}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<div class="footer-bar"></div>
+<div class="footer-text">Generated by ResumeForge · {{ now }}</div>
+</body>
+</html>

@@ -1,233 +1,130 @@
-from flask import Flask, render_template, request, jsonify, send_file
-import json
-import os
+from flask import Flask, render_template, request, jsonify, send_file, session
+from werkzeug.utils import secure_filename
+import os, json, base64, uuid
 from datetime import datetime
-import re
+from io import BytesIO
 
 app = Flask(__name__)
+app.secret_key = "resumeforge_niet_cse_ai_2024"
 
-RESUMES_DIR = "saved_resumes"
-os.makedirs(RESUMES_DIR, exist_ok=True)
+UPLOAD_FOLDER = "static/uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs("generated_resumes", exist_ok=True)
 
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-class ResumeManager:
-    """OOP-based resume management system"""
+# ── In-memory resume store (per session via global dict) ──────────────────
+resume_store = {}
 
-    def __init__(self):
-        self.personal = {}
-        self.education = []
-        self.skills = []
-        self.experience = []
-        self.projects = []
-        self.certifications = []
+def get_resume(rid):
+    return resume_store.get(rid, {
+        "personal": {}, "education": [], "skills": [],
+        "experience": [], "projects": [], "certifications": [],
+        "template": "classic", "photo": None
+    })
 
-    def set_personal(self, data):
-        self.personal = data
+def save_resume(rid, data):
+    resume_store[rid] = data
 
-    def add_education(self, edu):
-        self.education.append(edu)
-
-    def add_skill(self, skill):
-        if skill not in self.skills:
-            self.skills.append(skill)
-
-    def add_experience(self, exp):
-        self.experience.append(exp)
-
-    def add_project(self, proj):
-        self.projects.append(proj)
-
-    def add_certification(self, cert):
-        self.certifications.append(cert)
-
-    def to_dict(self):
-        return {
-            "personal": self.personal,
-            "education": self.education,
-            "skills": self.skills,
-            "experience": self.experience,
-            "projects": self.projects,
-            "certifications": self.certifications,
-            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-
-    def generate_text_resume(self):
-        """Generate formatted text resume"""
-        lines = []
-        p = self.personal
-
-        # Header
-        lines.append("=" * 70)
-        lines.append(p.get("name", "").upper().center(70))
-        lines.append(f"{p.get('email','')} | {p.get('phone','')} | {p.get('location','')}".center(70))
-        if p.get("linkedin"):
-            lines.append(p.get("linkedin", "").center(70))
-        lines.append("=" * 70)
-
-        # Objective
-        if p.get("objective"):
-            lines.append("\nOBJECTIVE")
-            lines.append("-" * 40)
-            lines.append(p["objective"])
-
-        # Education
-        if self.education:
-            lines.append("\nEDUCATION")
-            lines.append("-" * 40)
-            for edu in self.education:
-                lines.append(f"{edu.get('degree')} - {edu.get('institution')}")
-                lines.append(f"  Year: {edu.get('year')} | Grade: {edu.get('grade')}")
-
-        # Skills
-        if self.skills:
-            lines.append("\nTECHNICAL SKILLS")
-            lines.append("-" * 40)
-            lines.append(", ".join(self.skills))
-
-        # Experience
-        if self.experience:
-            lines.append("\nWORK EXPERIENCE")
-            lines.append("-" * 40)
-            for exp in self.experience:
-                lines.append(f"{exp.get('role')} at {exp.get('company')}")
-                lines.append(f"  Duration: {exp.get('duration')}")
-                lines.append(f"  {exp.get('description')}")
-
-        # Projects
-        if self.projects:
-            lines.append("\nPROJECTS")
-            lines.append("-" * 40)
-            for proj in self.projects:
-                lines.append(f"• {proj.get('name')}")
-                lines.append(f"  Tech: {proj.get('tech')} | {proj.get('description')}")
-
-        # Certifications
-        if self.certifications:
-            lines.append("\nCERTIFICATIONS")
-            lines.append("-" * 40)
-            for cert in self.certifications:
-                lines.append(f"• {cert.get('name')} — {cert.get('issuer')} ({cert.get('year')})")
-
-        lines.append("\n" + "=" * 70)
-        return "\n".join(lines)
-
-
-resume_manager = ResumeManager()
-
-
+# ─────────────────────────────────────────────────────────────────────────
 @app.route("/")
 def index():
+    if "rid" not in session:
+        session["rid"] = str(uuid.uuid4())
     return render_template("index.html")
 
+@app.route("/api/init", methods=["GET"])
+def init():
+    if "rid" not in session:
+        session["rid"] = str(uuid.uuid4())
+    rid = session["rid"]
+    return jsonify({"rid": rid, "data": get_resume(rid)})
 
-@app.route("/api/save-personal", methods=["POST"])
-def save_personal():
-    try:
-        data = request.get_json()
-        resume_manager.set_personal(data)
-        return jsonify({"success": True, "message": "Personal info saved!"})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
+# ── Save all form data at once ────────────────────────────────────────────
+@app.route("/api/save", methods=["POST"])
+def save():
+    rid = session.get("rid")
+    if not rid:
+        return jsonify({"success": False, "message": "Session expired"}), 400
+    data = request.get_json()
+    existing = get_resume(rid)
+    existing.update(data)
+    save_resume(rid, existing)
+    return jsonify({"success": True})
 
+# ── Photo upload ──────────────────────────────────────────────────────────
+@app.route("/api/upload-photo", methods=["POST"])
+def upload_photo():
+    rid = session.get("rid")
+    if "photo" not in request.files:
+        return jsonify({"success": False, "message": "No file"})
+    file = request.files["photo"]
+    if file.filename == "" or not allowed_file(file.filename):
+        return jsonify({"success": False, "message": "Invalid file type"})
+    # Convert to base64 for embedding in PDF
+    img_bytes = file.read()
+    b64 = base64.b64encode(img_bytes).decode("utf-8")
+    ext = file.filename.rsplit(".", 1)[1].lower()
+    mime = f"image/{ext}" if ext != "jpg" else "image/jpeg"
+    data_uri = f"data:{mime};base64,{b64}"
+    existing = get_resume(rid)
+    existing["photo"] = data_uri
+    save_resume(rid, existing)
+    return jsonify({"success": True, "photo": data_uri})
 
-@app.route("/api/add-education", methods=["POST"])
-def add_education():
-    try:
-        data = request.get_json()
-        resume_manager.add_education(data)
-        return jsonify({"success": True, "message": "Education added!", "data": resume_manager.education})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
+# ── Generate PDF using WeasyPrint ─────────────────────────────────────────
+@app.route("/api/generate-pdf", methods=["POST"])
+def generate_pdf():
+    from weasyprint import HTML, CSS
+    rid = session.get("rid")
+    data = get_resume(rid)
+    body = request.get_json() or {}
+    if body:
+        data.update(body)
+        save_resume(rid, data)
 
+    template_name = data.get("template", "classic")
+    html_content = render_template(
+        f"resume_{template_name}.html",
+        r=data,
+        now=datetime.now().strftime("%B %Y")
+    )
+    pdf_bytes = HTML(string=html_content, base_url=app.static_folder).write_pdf()
+    name = data.get("personal", {}).get("name", "resume").replace(" ", "_")
+    filename = f"{name}_{template_name}_resume.pdf"
+    return send_file(
+        BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=filename
+    )
 
-@app.route("/api/add-skill", methods=["POST"])
-def add_skill():
-    try:
-        data = request.get_json()
-        skill = data.get("skill", "").strip()
-        if skill:
-            resume_manager.add_skill(skill)
-        return jsonify({"success": True, "skills": resume_manager.skills})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-
-@app.route("/api/add-experience", methods=["POST"])
-def add_experience():
-    try:
-        data = request.get_json()
-        resume_manager.add_experience(data)
-        return jsonify({"success": True, "message": "Experience added!", "data": resume_manager.experience})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-
-@app.route("/api/add-project", methods=["POST"])
-def add_project():
-    try:
-        data = request.get_json()
-        resume_manager.add_project(data)
-        return jsonify({"success": True, "message": "Project added!", "data": resume_manager.projects})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-
-@app.route("/api/add-certification", methods=["POST"])
-def add_certification():
-    try:
-        data = request.get_json()
-        resume_manager.add_certification(data)
-        return jsonify({"success": True, "message": "Certification added!", "data": resume_manager.certifications})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-
-@app.route("/api/generate", methods=["POST"])
-def generate_resume():
-    try:
-        resume_data = resume_manager.to_dict()
-        text_resume = resume_manager.generate_text_resume()
-
-        # Save JSON
-        name = resume_data["personal"].get("name", "resume").replace(" ", "_")
-        filename = f"{RESUMES_DIR}/{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-        with open(filename, "w") as f:
-            f.write(text_resume)
-
-        return jsonify({
-            "success": True,
-            "resume": resume_data,
-            "text": text_resume,
-            "filename": filename
-        })
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-
-@app.route("/api/download", methods=["POST"])
-def download_resume():
-    try:
-        text_resume = resume_manager.generate_text_resume()
-        name = resume_manager.personal.get("name", "resume").replace(" ", "_")
-        filename = f"/tmp/{name}_resume.txt"
-        with open(filename, "w") as f:
-            f.write(text_resume)
-        return send_file(filename, as_attachment=True, download_name=f"{name}_resume.txt")
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-
-@app.route("/api/get-data", methods=["GET"])
-def get_data():
-    return jsonify(resume_manager.to_dict())
-
+# ── Preview HTML (for live preview in browser) ───────────────────────────
+@app.route("/api/preview", methods=["POST"])
+def preview():
+    rid = session.get("rid")
+    data = get_resume(rid)
+    body = request.get_json() or {}
+    if body:
+        data.update(body)
+        save_resume(rid, data)
+    template_name = data.get("template", "classic")
+    html_content = render_template(
+        f"resume_{template_name}.html",
+        r=data,
+        now=datetime.now().strftime("%B %Y")
+    )
+    return jsonify({"success": True, "html": html_content})
 
 @app.route("/api/reset", methods=["POST"])
 def reset():
-    global resume_manager
-    resume_manager = ResumeManager()
-    return jsonify({"success": True, "message": "Resume cleared!"})
-
+    rid = session.get("rid")
+    if rid and rid in resume_store:
+        del resume_store[rid]
+    session["rid"] = str(uuid.uuid4())
+    return jsonify({"success": True})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(debug=True, port=5000)

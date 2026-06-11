@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ResumeForge — Python OOP Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0D0F14;--surface:#141720;--surface2:#1C2030;--border:#2A2F42;--accent:#6C63FF;--accent2:#FF6B6B;--gold:#F5C842;--text:#E8EAF0;--muted:#7A8099;--code-bg:#0A0C12;--font-display:'Syne',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh}
+.site-header{position:sticky;top:0;z-index:100;background:rgba(13,15,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px;padding:14px 24px}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-icon{font-size:22px;color:var(--accent)}.logo-text{font-family:var(--font-display);font-weight:800;font-size:18px;letter-spacing:-.5px}
+.logo-tag{font-family:var(--font-mono);font-size:10px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:4px;border:1px solid var(--border)}
+.steps-nav{display:flex;gap:4px;flex:1;overflow-x:auto}.steps-nav::-webkit-scrollbar{display:none}
+.step-btn{background:none;border:1px solid transparent;color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:500;padding:6px 12px;border-radius:6px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.step-btn:hover{color:var(--text);border-color:var(--border)}.step-btn.active{color:var(--accent);border-color:var(--accent);background:rgba(108,99,255,.1)}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:var(--font-body)}
+.reset-btn:hover{color:var(--accent2);border-color:var(--accent2)}
+.hero{background:linear-gradient(135deg,#0D0F14 0%,#141728 50%,#0D0F14 100%);border-bottom:1px solid var(--border);padding:60px 24px}
+.hero-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr auto;align-items:center;gap:40px}
+.hero-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:var(--font-display);font-size:clamp(36px,5vw,64px);font-weight:800;line-height:1.05;letter-spacing:-2px;color:var(--text);margin-bottom:12px}
+.hero-title em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:.5px}
+.hero-right{display:flex;flex-direction:column;gap:12px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 24px;text-align:center;min-width:120px;transition:border-color .3s}
+.stat-card.accent{border-color:var(--accent)}.stat-card:hover{border-color:var(--accent)}
+.stat-num{display:block;font-family:var(--font-display);font-size:36px;font-weight:800;color:var(--accent);line-height:1}
+.stat-card.accent .stat-num{color:var(--gold)}.stat-label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.builder{max-width:1200px;margin:0 auto;padding:48px 24px 80px}
+.form-section{display:none;animation:fadeUp .35s ease forwards}.form-section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.section-head{margin-bottom:32px}
+.sec-badge{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;background:rgba(108,99,255,.1);border:1px solid rgba(108,99,255,.3);padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:12px}
+.section-head h2{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+.section-head p{color:var(--muted);font-size:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.field-group{display:flex;flex-direction:column;gap:8px}.field-group.span-2{grid-column:span 2}
+label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+input[type=text],input[type=email],textarea{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:14px;padding:12px 14px;width:100%;transition:border-color .2s,box-shadow .2s;outline:none;resize:vertical}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.12)}
+input::placeholder,textarea::placeholder{color:var(--border)}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:600;padding:12px 28px;transition:all .2s;letter-spacing:.3px}
+.btn-primary:hover{background:#5851e8;transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,99,255,.35)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:500;padding:11px 24px;transition:all .2s}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:none;color:var(--muted);border:1px solid transparent;border-radius:8px;cursor:pointer;font-family:var(--font-body);font-size:14px;padding:11px 20px;transition:all .2s}
+.btn-ghost:hover{color:var(--text);border-color:var(--border)}
+.form-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.skill-input-row{display:flex;gap:10px;margin-bottom:16px}.skill-input-row input{flex:1}
+.btn-add{background:var(--accent);color:#fff;border:none;border-radius:8px;width:48px;font-size:22px;cursor:pointer;transition:all .2s}
+.btn-add:hover{background:#5851e8}
+.skill-presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;align-items:center}
+.preset-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.preset-chip{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:20px;font-size:12px;padding:4px 12px;cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+.preset-chip:hover{border-color:var(--accent);color:var(--accent)}
+.skills-cloud{display:flex;flex-wrap:wrap;gap:10px;min-height:48px;padding:16px;background:var(--surface);border:1px dashed var(--border);border-radius:12px;margin-bottom:24px}
+.skill-tag{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(108,99,255,.15),rgba(108,99,255,.05));border:1px solid rgba(108,99,255,.35);color:var(--text);border-radius:20px;font-size:13px;font-weight:500;padding:5px 14px;animation:popIn .2s ease}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.skill-tag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0;line-height:1}
+.skill-tag button:hover{color:var(--accent2)}
+.added-list{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.added-item{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.5;animation:fadeUp .2s ease}
+.added-item strong{color:var(--text)}.added-item span{color:var(--muted)}
+.two-col-layout{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px}
+.col-title{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:16px;color:var(--gold)}
+.preview-toolbar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.resume-output{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:32px 36px;font-family:var(--font-mono);font-size:13px;line-height:1.7;color:#C9D1E3;white-space:pre-wrap;word-break:break-word;min-height:300px;overflow-x:auto}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px;color:var(--muted);font-family:var(--font-body)}
+.empty-icon{font-size:40px}
+.toast{margin-top:12px;font-size:13px;font-weight:500;height:20px;transition:all .3s}
+.toast.success{color:#4ADE80}.toast.error{color:var(--accent2)}
+.code-panel{background:var(--code-bg);border-top:1px solid var(--border);padding:60px 24px}
+.code-panel-inner{max-width:1200px;margin:0 auto}
+.code-panel-head{margin-bottom:28px}
+.code-badge{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.3);padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:10px}
+.code-panel-head p{color:var(--muted);font-size:14px}
+.code-block{background:#070910;border:1px solid var(--border);border-radius:12px;padding:28px 32px;font-family:var(--font-mono);font-size:13px;line-height:1.9;overflow-x:auto}
+.code-block code{display:block}
+.kw{color:#C792EA}.cls{color:#82AAFF}.fn{color:#82AAFF}.str{color:#C3E88D}.op{color:#89DDFF}.comment{color:#546E7A;font-style:italic}
+.site-footer{background:var(--surface);border-top:1px solid var(--border);padding:28px 24px;text-align:center}
+.footer-inner p{color:var(--muted);font-size:13px;line-height:1.8}.footer-inner strong{color:var(--text)}
+@media(max-width:768px){.hero-grid{grid-template-columns:1fr}.hero-right{flex-direction:row}.stat-card{min-width:90px}.form-grid{grid-template-columns:1fr}.field-group.span-2{grid-column:span 1}.two-col-layout{grid-template-columns:1fr}.steps-nav{gap:2px}.step-btn{font-size:11px;padding:5px 8px}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">ResumeForge</span>
+      <span class="logo-tag">Python OOP Project</span>
+    </div>
+    <nav class="steps-nav">
+      <button class="step-btn active" data-step="personal">① Personal</button>
+      <button class="step-btn" data-step="education">② Education</button>
+      <button class="step-btn" data-step="skills">③ Skills</button>
+      <button class="step-btn" data-step="experience">④ Experience</button>
+      <button class="step-btn" data-step="projects">⑤ Projects</button>
+      <button class="step-btn" data-step="preview">⑥ Preview</button>
+    </nav>
+    <button class="reset-btn" id="resetBtn">↺ Reset</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <p class="hero-eyebrow">NIET CSE-AI · External Presentation Project</p>
+      <h1 class="hero-title">Build a resume<br/><em>that lands.</em></h1>
+      <p class="hero-sub">Python · OOP · File Handling · Exception Handling · Flask</p>
+    </div>
+    <div class="hero-right">
+      <div class="stat-card"><span class="stat-num" id="statFields">0</span><span class="stat-label">Fields Filled</span></div>
+      <div class="stat-card accent"><span class="stat-num" id="statSections">0</span><span class="stat-label">Sections Done</span></div>
+      <div class="stat-card"><span class="stat-num" id="statSkills">0</span><span class="stat-label">Skills Added</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="builder">
+
+  <!-- PERSONAL -->
+  <section class="form-section active" id="sec-personal">
+    <div class="section-head">
+      <span class="sec-badge">STEP 01</span>
+      <h2>Personal Information</h2>
+      <p>Your identity. Make it count.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group span-2"><label>Full Name *</label><input type="text" id="p-name" placeholder="Abhishek Kumar"/></div>
+      <div class="field-group"><label>Email *</label><input type="email" id="p-email" placeholder="abhishek@email.com"/></div>
+      <div class="field-group"><label>Phone *</label><input type="text" id="p-phone" placeholder="+91 98765 43210"/></div>
+      <div class="field-group"><label>Location</label><input type="text" id="p-location" placeholder="Greater Noida, UP"/></div>
+      <div class="field-group"><label>LinkedIn / GitHub</label><input type="text" id="p-linkedin" placeholder="linkedin.com/in/yourname"/></div>
+      <div class="field-group span-2"><label>Career Objective</label><textarea id="p-objective" rows="3" placeholder="A passionate CSE-AI student seeking opportunities to apply my skills in machine learning and software development..."></textarea></div>
+    </div>
+    <div class="form-actions"><button class="btn-primary" onclick="savePersonal()">Save & Continue →</button></div>
+    <div class="toast" id="toast-personal"></div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section class="form-section" id="sec-education">
+    <div class="section-head">
+      <span class="sec-badge">STEP 02</span>
+      <h2>Education</h2>
+      <p>Your academic foundation.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group span-2"><label>Degree / Qualification *</label><input type="text" id="e-degree" placeholder="B.Tech — Computer Science Engineering (AI)"/></div>
+      <div class="field-group span-2"><label>Institution *</label><input type="text" id="e-institution" placeholder="NIET, Greater Noida"/></div>
+      <div class="field-group"><label>Year of Passing</label><input type="text" id="e-year" placeholder="2026"/></div>
+      <div class="field-group"><label>CGPA / Percentage</label><input type="text" id="e-grade" placeholder="8.5 CGPA"/></div>
+    </div>
+    <div class="form-actions"><button class="btn-secondary" onclick="addEducation()">+ Add Education</button></div>
+    <div class="added-list" id="edu-list"></div>
+    <div class="form-actions" style="margin-top:24px"><button class="btn-primary" onclick="showSection('skills')">Continue →</button></div>
+    <div class="toast" id="toast-education"></div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="form-section" id="sec-skills">
+    <div class="section-head">
+      <span class="sec-badge">STEP 03</span>
+      <h2>Technical Skills</h2>
+      <p>Press Enter or click + to add each skill.</p>
+    </div>
+    <div class="skill-input-row">
+      <input type="text" id="skill-input" placeholder="e.g. Python, Machine Learning, Flask..."/>
+      <button class="btn-add" onclick="addSkill()">+</button>
+    </div>
+    <div class="skill-presets">
+      <span class="preset-label">Quick add:</span>
+      <button class="preset-chip" onclick="quickSkill('Python')">Python</button>
+      <button class="preset-chip" onclick="quickSkill('Flask')">Flask</button>
+      <button class="preset-chip" onclick="quickSkill('Machine Learning')">Machine Learning</button>
+      <button class="preset-chip" onclick="quickSkill('Deep Learning')">Deep Learning</button>
+      <button class="preset-chip" onclick="quickSkill('SQL')">SQL</button>
+      <button class="preset-chip" onclick="quickSkill('Java')">Java</button>
+      <button class="preset-chip" onclick="quickSkill('HTML/CSS')">HTML/CSS</button>
+      <button class="preset-chip" onclick="quickSkill('Git')">Git</button>
+      <button class="preset-chip" onclick="quickSkill('TensorFlow')">TensorFlow</button>
+      <button class="preset-chip" onclick="quickSkill('Django')">Django</button>
+      <button class="preset-chip" onclick="quickSkill('NumPy')">NumPy</button>
+      <button class="preset-chip" onclick="quickSkill('Pandas')">Pandas</button>
+    </div>
+    <div class="skills-cloud" id="skills-cloud"></div>
+    <div class="form-actions"><button class="btn-primary" onclick="showSection('experience')">Continue →</button></div>
+    <div class="toast" id="toast-skills"></div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="form-section" id="sec-experience">
+    <div class="section-head">
+      <span class="sec-badge">STEP 04</span>
+      <h2>Work Experience</h2>
+      <p>Internships, jobs, freelance work.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group"><label>Job Title / Role</label><input type="text" id="ex-role" placeholder="Python Developer Intern"/></div>
+      <div class="field-group"><label>Company / Organisation</label><input type="text" id="ex-company" placeholder="TechCorp Pvt. Ltd."/></div>
+      <div class="field-group"><label>Duration</label><input type="text" id="ex-duration" placeholder="Jun 2024 – Aug 2024"/></div>
+      <div class="field-group"><label>Location</label><input type="text" id="ex-location" placeholder="Remote / Noida"/></div>
+      <div class="field-group span-2"><label>Key Responsibilities</label><textarea id="ex-desc" rows="3" placeholder="Developed REST APIs using Flask and integrated ML models for prediction tasks..."></textarea></div>
+    </div>
+    <div class="form-actions"><button class="btn-secondary" onclick="addExperience()">+ Add Experience</button></div>
+    <div class="added-list" id="exp-list"></div>
+    <div class="form-actions" style="margin-top:24px"><button class="btn-primary" onclick="showSection('projects')">Continue →</button></div>
+    <div class="toast" id="toast-experience"></div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="form-section" id="sec-projects">
+    <div class="section-head">
+      <span class="sec-badge">STEP 05</span>
+      <h2>Projects & Certifications</h2>
+      <p>Showcase what you've built.</p>
+    </div>
+    <div class="two-col-layout">
+      <div class="col">
+        <h3 class="col-title">Projects</h3>
+        <div class="form-grid">
+          <div class="field-group span-2"><label>Project Name</label><input type="text" id="pr-name" placeholder="Resume Builder (Python OOP)"/></div>
+          <div class="field-group span-2"><label>Technologies Used</label><input type="text" id="pr-tech" placeholder="Python, Flask, Tkinter, File Handling"/></div>
+          <div class="field-group span-2"><label>Description</label><textarea id="pr-desc" rows="2" placeholder="GUI-based resume builder using Python OOP concepts..."></textarea></div>
+        </div>
+        <button class="btn-secondary" onclick="addProject()">+ Add Project</button>
+        <div class="added-list" id="proj-list"></div>
+      </div>
+      <div class="col">
+        <h3 class="col-title">Certifications</h3>
+        <div class="form-grid">
+          <div class="field-group span-2"><label>Certification Name</label><input type="text" id="cert-name" placeholder="Python for Data Science"/></div>
+          <div class="field-group"><label>Issued By</label><input type="text" id="cert-issuer" placeholder="Coursera / NPTEL"/></div>
+          <div class="field-group"><label>Year</label><input type="text" id="cert-year" placeholder="2024"/></div>
+        </div>
+        <button class="btn-secondary" onclick="addCertification()">+ Add Cert</button>
+        <div class="added-list" id="cert-list"></div>
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn-primary" onclick="generateResume()">⚡ Generate Resume →</button></div>
+    <div class="toast" id="toast-projects"></div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="form-section" id="sec-preview">
+    <div class="section-head">
+      <span class="sec-badge">STEP 06</span>
+      <h2>Your Resume</h2>
+      <p>Generated using Python OOP + File Handling</p>
+    </div>
+    <div class="preview-toolbar">
+      <button class="btn-primary" onclick="downloadResume()">⬇ Download .txt</button>
+      <button class="btn-secondary" onclick="copyResume()">⎘ Copy Text</button>
+      <button class="btn-ghost" onclick="showSection('personal')">← Edit Details</button>
+    </div>
+    <div class="resume-output" id="resume-output">
+      <div class="empty-state"><span class="empty-icon">📄</span><p>Fill in your details and click <strong>Generate Resume</strong></p></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- PYTHON CODE PANEL -->
+<section class="code-panel">
+  <div class="code-panel-inner">
+    <div class="code-panel-head">
+      <span class="code-badge">Python OOP — Under the Hood</span>
+      <p>The actual Python class powering this application</p>
+    </div>
+    <pre class="code-block"><code><span class="kw">class</span> <span class="cls">ResumeManager</span>:
+    <span class="str">"""OOP-based resume management system"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.personal       <span class="op">=</span> {}          <span class="comment"># Dictionary — stores key-value pairs</span>
+        self.education      <span class="op">=</span> []          <span class="comment"># List — dynamic academic records</span>
+        self.skills         <span class="op">=</span> []          <span class="comment"># List — deduplicated skill set</span>
+        self.experience     <span class="op">=</span> []          <span class="comment"># List — work history</span>
+        self.projects       <span class="op">=</span> []          <span class="comment"># List — project portfolio</span>
+        self.certifications <span class="op">=</span> []          <span class="comment"># List — credential storage</span>
+
+    <span class="kw">def</span> <span class="fn">add_education</span>(self, edu: dict):
+        self.education.append(edu)           <span class="comment"># List.append() — O(1)</span>
+
+    <span class="kw">def</span> <span class="fn">add_skill</span>(self, skill: str):
+        <span class="kw">if</span> skill <span class="kw">not in</span> self.skills:        <span class="comment"># Deduplication check</span>
+            self.skills.append(skill)
+
+    <span class="kw">def</span> <span class="fn">generate_text_resume</span>(self) <span class="op">-></span> str:
+        <span class="str">"""File Handling — Exception Handling"""</span>
+        lines <span class="op">=</span> []
+        <span class="kw">try</span>:
+            <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"resume.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+                f.write(<span class="str">"\n"</span>.join(lines))   <span class="comment"># File Handling ✓</span>
+        <span class="kw">except</span> IOError <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"Error: </span>{e}<span class="str">"</span>)            <span class="comment"># Exception Handling ✓</span>
+        <span class="kw">return</span> <span class="str">"\n"</span>.join(lines)</code></pre>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p><strong>ResumeForge — Resume Builder</strong> · NIET CSE-AI External Presentation Project</p>
+    <p>Python · OOP · File Handling · Flask · Exception Handling · Lists · Dictionaries · Classes · Modules</p>
+  </div>
+</footer>
+
+<script>
+// ── Pure JS State (mirrors Python ResumeManager class logic) ──────────────
+const state = {
+  personal: {}, education: [], skills: [], experience: [],
+  projects: [], certifications: [], completedSections: new Set()
+};
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + name)?.classList.add('active');
+  document.querySelector(`[data-step="${name}"]`)?.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.querySelectorAll('.step-btn').forEach(btn => {
+  btn.addEventListener('click', () => showSection(btn.dataset.step));
+});
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+function updateStats() {
+  let fields = 0;
+  ['name','email','phone','location','objective'].forEach(k => { if (state.personal[k]) fields++; });
+  fields += state.education.length + state.experience.length + state.projects.length;
+  document.getElementById('statFields').textContent = fields;
+  document.getElementById('statSections').textContent = state.completedSections.size;
+  document.getElementById('statSkills').textContent = state.skills.length;
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+function showToast(id, msg, type = 'success') {
+  const el = document.getElementById('toast-' + id);
+  if (!el) return;
+  el.textContent = (type === 'success' ? '✓ ' : '✗ ') + msg;
+  el.className = 'toast ' + type;
+  setTimeout(() => { el.textContent = ''; el.className = 'toast'; }, 3000);
+}
+
+// ── Personal ───────────────────────────────────────────────────────────────
+function savePersonal() {
+  const d = {
+    name: document.getElementById('p-name').value.trim(),
+    email: document.getElementById('p-email').value.trim(),
+    phone: document.getElementById('p-phone').value.trim(),
+    location: document.getElementById('p-location').value.trim(),
+    linkedin: document.getElementById('p-linkedin').value.trim(),
+    objective: document.getElementById('p-objective').value.trim(),
+  };
+  if (!d.name || !d.email) { showToast('personal', 'Name and Email are required.', 'error'); return; }
+  state.personal = d;
+  state.completedSections.add('personal');
+  updateStats();
+  showToast('personal', 'Personal info saved!');
+  setTimeout(() => showSection('education'), 700);
+}
+
+// ── Education ──────────────────────────────────────────────────────────────
+function addEducation() {
+  const d = {
+    degree: document.getElementById('e-degree').value.trim(),
+    institution: document.getElementById('e-institution').value.trim(),
+    year: document.getElementById('e-year').value.trim(),
+    grade: document.getElementById('e-grade').value.trim(),
+  };
+  if (!d.degree || !d.institution) { showToast('education', 'Degree & Institution required.', 'error'); return; }
+  state.education.push(d);
+  state.completedSections.add('education');
+  updateStats();
+  renderList('edu-list', state.education, e => `<strong>${e.degree}</strong><br/><span>${e.institution} · ${e.year} · ${e.grade}</span>`);
+  showToast('education', 'Education added!');
+  ['e-degree','e-institution','e-year','e-grade'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── Skills ─────────────────────────────────────────────────────────────────
+document.getElementById('skill-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } });
+
+function addSkill() {
+  const input = document.getElementById('skill-input');
+  const skill = input.value.trim();
+  if (skill) { pushSkill(skill); input.value = ''; }
+}
+function quickSkill(s) { pushSkill(s); }
+function pushSkill(skill) {
+  if (!state.skills.includes(skill)) {
+    state.skills.push(skill);
+    state.completedSections.add('skills');
+    updateStats();
+    renderSkillCloud();
+  }
+}
+function removeSkill(skill) {
+  state.skills = state.skills.filter(s => s !== skill);
+  updateStats(); renderSkillCloud();
+}
+function renderSkillCloud() {
+  document.getElementById('skills-cloud').innerHTML = state.skills.map(s =>
+    `<span class="skill-tag">${s}<button onclick="removeSkill('${s.replace(/'/g,"\\'")}')">×</button></span>`
+  ).join('');
+}
+
+// ── Experience ─────────────────────────────────────────────────────────────
+function addExperience() {
+  const d = {
+    role: document.getElementById('ex-role').value.trim(),
+    company: document.getElementById('ex-company').value.trim(),
+    duration: document.getElementById('ex-duration').value.trim(),
+    location: document.getElementById('ex-location').value.trim(),
+    description: document.getElementById('ex-desc').value.trim(),
+  };
+  if (!d.role) { showToast('experience', 'Job title required.', 'error'); return; }
+  state.experience.push(d);
+  state.completedSections.add('experience');
+  updateStats();
+  renderList('exp-list', state.experience, e => `<strong>${e.role}</strong> at <strong>${e.company}</strong><br/><span>${e.duration}</span>`);
+  showToast('experience', 'Experience added!');
+  ['ex-role','ex-company','ex-duration','ex-location','ex-desc'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── Projects ───────────────────────────────────────────────────────────────
+function addProject() {
+  const d = {
+    name: document.getElementById('pr-name').value.trim(),
+    tech: document.getElementById('pr-tech').value.trim(),
+    description: document.getElementById('pr-desc').value.trim(),
+  };
+  if (!d.name) { showToast('projects', 'Project name required.', 'error'); return; }
+  state.projects.push(d);
+  state.completedSections.add('projects');
+  updateStats();
+  renderList('proj-list', state.projects, p => `<strong>${p.name}</strong><br/><span>${p.tech}</span>`);
+  showToast('projects', 'Project added!');
+  ['pr-name','pr-tech','pr-desc'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── Certifications ─────────────────────────────────────────────────────────
+function addCertification() {
+  const d = {
+    name: document.getElementById('cert-name').value.trim(),
+    issuer: document.getElementById('cert-issuer').value.trim(),
+    year: document.getElementById('cert-year').value.trim(),
+  };
+  if (!d.name) { showToast('projects', 'Certification name required.', 'error'); return; }
+  state.certifications.push(d);
+  renderList('cert-list', state.certifications, c => `<strong>${c.name}</strong><br/><span>${c.issuer} · ${c.year}</span>`);
+  showToast('projects', 'Certification added!');
+  ['cert-name','cert-issuer','cert-year'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── Render Helper ──────────────────────────────────────────────────────────
+function renderList(id, arr, tpl) {
+  document.getElementById(id).innerHTML = arr.map(item =>
+    `<div class="added-item">${tpl(item)}</div>`).join('');
+}
+
+// ── Generate Resume ────────────────────────────────────────────────────────
+function generateResume() {
+  const p = state.personal;
+  if (!p.name) { showToast('projects', 'Please fill Personal Info first!', 'error'); return; }
+  const sep70 = '='.repeat(70);
+  const dash40 = '-'.repeat(40);
+  const center = (s, w=70) => { const pad = Math.max(0, Math.floor((w - s.length)/2)); return ' '.repeat(pad) + s; };
+
+  const lines = [];
+  lines.push(sep70);
+  lines.push(center((p.name||'').toUpperCase()));
+  lines.push(center([p.email, p.phone, p.location].filter(Boolean).join(' | ')));
+  if (p.linkedin) lines.push(center(p.linkedin));
+  lines.push(sep70);
+
+  if (p.objective) {
+    lines.push(''); lines.push('OBJECTIVE'); lines.push(dash40);
+    lines.push(p.objective);
+  }
+
+  if (state.education.length) {
+    lines.push(''); lines.push('EDUCATION'); lines.push(dash40);
+    state.education.forEach(e => {
+      lines.push(`${e.degree} — ${e.institution}`);
+      lines.push(`  Year: ${e.year}  |  Grade: ${e.grade}`);
+    });
+  }
+
+  if (state.skills.length) {
+    lines.push(''); lines.push('TECHNICAL SKILLS'); lines.push(dash40);
+    lines.push(state.skills.join('  ·  '));
+  }
+
+  if (state.experience.length) {
+    lines.push(''); lines.push('WORK EXPERIENCE'); lines.push(dash40);
+    state.experience.forEach(e => {
+      lines.push(`${e.role}  at  ${e.company}`);
+      lines.push(`  Duration: ${e.duration}  |  ${e.location}`);
+      if (e.description) lines.push(`  ${e.description}`);
+    });
+  }
+
+  if (state.projects.length) {
+    lines.push(''); lines.push('PROJECTS'); lines.push(dash40);
+    state.projects.forEach(proj => {
+      lines.push(`• ${proj.name}`);
+      lines.push(`  Tech Stack: ${proj.tech}`);
+      if (proj.description) lines.push(`  ${proj.description}`);
+    });
+  }
+
+  if (state.certifications.length) {
+    lines.push(''); lines.push('CERTIFICATIONS'); lines.push(dash40);
+    state.certifications.forEach(c => {
+      lines.push(`• ${c.name}  —  ${c.issuer}  (${c.year})`);
+    });
+  }
+
+  lines.push(''); lines.push(sep70);
+  const text = lines.join('\n');
+
+  state.completedSections.add('preview');
+  updateStats();
+  document.getElementById('resume-output').textContent = text;
+  setTimeout(() => showSection('preview'), 300);
+  showToast('projects', 'Resume generated!');
+}
+
+// ── Download ───────────────────────────────────────────────────────────────
+function downloadResume() {
+  const text = document.getElementById('resume-output').textContent;
+  if (!text || text.includes('Fill in your details')) { alert('Please generate your resume first!'); return; }
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${(state.personal.name||'resume').replace(/ /g,'_')}_resume.txt`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ── Copy ───────────────────────────────────────────────────────────────────
+function copyResume() {
+  const text = document.getElementById('resume-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target; const orig = btn.textContent;
+    btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+// ── Reset ──────────────────────────────────────────────────────────────────
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Clear all data and start over?')) return;
+  Object.assign(state, { personal:{}, education:[], skills:[], experience:[], projects:[], certifications:[], completedSections: new Set() });
+  document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+  ['edu-list','exp-list','proj-list','cert-list','skills-cloud'].forEach(id => document.getElementById(id).innerHTML = '');
+  document.getElementById('resume-output').innerHTML = `<div class="empty-state"><span class="empty-icon">📄</span><p>Fill in your details and click <strong>Generate Resume</strong></p></div>`;
+  updateStats(); showSection('personal');
+});
+
+updateStats();
+</script>
+</body>
+</html>

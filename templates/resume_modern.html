@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10pt; color: #2d2d2d;
+    background: white; width: 210mm; min-height: 297mm;
+    display: flex;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 190px; min-height: 297mm;
+    background: linear-gradient(180deg, #00897b 0%, #00695c 100%);
+    padding: 0; flex-shrink: 0;
+    display: flex; flex-direction: column;
+  }
+  .sidebar-top {
+    background: rgba(0,0,0,0.15);
+    padding: 28px 20px 22px;
+    text-align: center;
+  }
+  .photo-wrap img {
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.6);
+    object-fit: cover; display: block; margin: 0 auto 12px;
+  }
+  .photo-placeholder {
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 3px dashed rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26pt; margin: 0 auto 12px;
+    color: rgba(255,255,255,0.5);
+  }
+  .sidebar-name {
+    font-size: 13pt; font-weight: 800; color: white;
+    line-height: 1.2; word-break: break-word;
+  }
+  .sidebar-tagline {
+    font-size: 8pt; color: rgba(255,255,255,0.75);
+    margin-top: 4px; font-style: italic;
+  }
+  .sidebar-body { padding: 20px 18px; flex: 1; }
+  .sb-section { margin-bottom: 20px; }
+  .sb-title {
+    font-size: 8pt; font-weight: 800;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 4px;
+  }
+  .contact-item {
+    font-size: 8.5pt; color: white; margin-bottom: 7px;
+    display: flex; align-items: flex-start; gap: 7px;
+    line-height: 1.4; word-break: break-all;
+  }
+  .contact-icon { font-size: 9pt; flex-shrink: 0; margin-top: 1px; }
+  .skill-chip {
+    display: inline-block; margin: 3px 3px 3px 0;
+    background: rgba(255,255,255,0.18);
+    color: white; font-size: 8pt; padding: 3px 9px;
+    border-radius: 12px; font-weight: 600;
+  }
+  .cert-sb { margin-bottom: 9px; }
+  .cert-sb-name { font-size: 8.5pt; color: white; font-weight: 600; }
+  .cert-sb-issuer { font-size: 8pt; color: rgba(255,255,255,0.65); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; padding: 32px 32px 28px; }
+  .main-top { margin-bottom: 22px; border-bottom: 2px solid #00897b; padding-bottom: 14px; }
+  .main-name { font-size: 24pt; font-weight: 900; color: #00695c; line-height: 1; letter-spacing: -1px; }
+  .main-role { font-size: 10pt; color: #888; margin-top: 4px; font-weight: 300; }
+
+  .section { margin-bottom: 20px; }
+  .section-title {
+    font-size: 10pt; font-weight: 800; color: #00695c;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .section-title::after {
+    content: ""; flex: 1; height: 1px; background: #e0f2f1;
+  }
+  .obj-text { font-size: 9.5pt; line-height: 1.65; color: #555; font-style: italic; }
+
+  .entry { margin-bottom: 14px; position: relative; padding-left: 14px; }
+  .entry::before {
+    content: ""; position: absolute; left: 0; top: 6px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #00897b;
+  }
+  .entry-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .entry-title { font-weight: 700; font-size: 10.5pt; color: #1a1a1a; }
+  .entry-company { font-size: 9pt; color: #00897b; font-weight: 600; margin-top: 2px; }
+  .entry-date {
+    font-size: 8pt; color: #fff; background: #00897b;
+    padding: 2px 9px; border-radius: 10px;
+    white-space: nowrap; font-weight: 600; flex-shrink: 0;
+  }
+  .entry-desc { font-size: 9pt; color: #555; line-height: 1.55; margin-top: 5px; }
+  .entry-tech {
+    font-size: 8pt; color: #00695c; background: #e0f7fa;
+    padding: 2px 8px; border-radius: 3px; font-weight: 700;
+    display: inline-block; margin-top: 5px;
+  }
+  .edu-entry { margin-bottom: 11px; padding-left: 14px; position: relative; }
+  .edu-entry::before {
+    content: ""; position: absolute; left: 0; top: 5px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #00897b;
+  }
+  .edu-degree { font-weight: 700; font-size: 10pt; color: #1a1a1a; }
+  .edu-school { font-size: 9pt; color: #777; margin-top: 2px; }
+  .edu-grade {
+    display: inline-block; margin-top: 3px;
+    font-size: 8pt; color: white; background: #00695c;
+    padding: 1px 8px; border-radius: 3px; font-weight: 700;
+  }
+  .footer {
+    text-align: center; font-size: 7.5pt; color: #ccc;
+    margin-top: 20px; padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-top">
+    <div class="photo-wrap">
+      {% if r.photo %}
+        <img src="{{ r.photo }}" alt="Photo"/>
+      {% else %}
+        <div class="photo-placeholder">👤</div>
+      {% endif %}
+    </div>
+    <div class="sidebar-name">{{ r.personal.get('name', 'Your Name') }}</div>
+    {% if r.personal.get('objective') %}
+    <div class="sidebar-tagline">{{ r.personal.objective[:60] }}{% if r.personal.objective|length > 60 %}...{% endif %}</div>
+    {% endif %}
+  </div>
+
+  <div class="sidebar-body">
+    <div class="sb-section">
+      <div class="sb-title">Contact</div>
+      {% if r.personal.get('email') %}
+      <div class="contact-item"><span class="contact-icon">✉</span>{{ r.personal.email }}</div>
+      {% endif %}
+      {% if r.personal.get('phone') %}
+      <div class="contact-item"><span class="contact-icon">☏</span>{{ r.personal.phone }}</div>
+      {% endif %}
+      {% if r.personal.get('location') %}
+      <div class="contact-item"><span class="contact-icon">⊙</span>{{ r.personal.location }}</div>
+      {% endif %}
+      {% if r.personal.get('linkedin') %}
+      <div class="contact-item"><span class="contact-icon">in</span>{{ r.personal.linkedin }}</div>
+      {% endif %}
+    </div>
+
+    {% if r.skills %}
+    <div class="sb-section">
+      <div class="sb-title">Skills</div>
+      {% for s in r.skills %}
+        <span class="skill-chip">{{ s }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if r.certifications %}
+    <div class="sb-section">
+      <div class="sb-title">Certifications</div>
+      {% for c in r.certifications %}
+      <div class="cert-sb">
+        <div class="cert-sb-name">{{ c.name }}</div>
+        <div class="cert-sb-issuer">{{ c.issuer }}{% if c.year %} · {{ c.year }}{% endif %}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="main-top">
+    <div class="main-name">{{ r.personal.get('name', 'Your Name') }}</div>
+    {% if r.personal.get('location') %}
+    <div class="main-role">{{ r.personal.location }}</div>
+    {% endif %}
+  </div>
+
+  {% if r.personal.get('objective') %}
+  <div class="section">
+    <div class="section-title">About Me</div>
+    <div class="obj-text">{{ r.personal.objective }}</div>
+  </div>
+  {% endif %}
+
+  {% if r.education %}
+  <div class="section">
+    <div class="section-title">Education</div>
+    {% for e in r.education %}
+    <div class="edu-entry">
+      <div class="edu-degree">{{ e.degree }}</div>
+      <div class="edu-school">{{ e.institution }}{% if e.year %} · {{ e.year }}{% endif %}</div>
+      {% if e.grade %}<span class="edu-grade">{{ e.grade }}</span>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if r.experience %}
+  <div class="section">
+    <div class="section-title">Experience</div>
+    {% for ex in r.experience %}
+    <div class="entry">
+      <div class="entry-header">
+        <div>
+          <div class="entry-title">{{ ex.role }}</div>
+          <div class="entry-company">{{ ex.company }}{% if ex.location %} · {{ ex.location }}{% endif %}</div>
+        </div>
+        {% if ex.duration %}<span class="entry-date">{{ ex.duration }}</span>{% endif %}
+      </div>
+      {% if ex.description %}<div class="entry-desc">{{ ex.description }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if r.projects %}
+  <div class="section">
+    <div class="section-title">Projects</div>
+    {% for p in r.projects %}
+    <div class="entry">
+      <div class="entry-title">{{ p.name }}</div>
+      {% if p.description %}<div class="entry-desc">{{ p.description }}</div>{% endif %}
+      {% if p.tech %}<span class="entry-tech">{{ p.tech }}</span>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="footer">Generated by ResumeForge · {{ now }}</div>
+</div>
+
+</body>
+</html>
